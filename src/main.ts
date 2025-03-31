@@ -1,9 +1,17 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
+import { AppModule } from "./app/app.module";
 import { Logger } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
+import { resolve } from "node:path";
 
 declare const module: any;
+declare global {
+  // eslint-disable-next-line no-var, vars-on-top
+  var appRoot: string;
+};
+
+globalThis.appRoot = resolve(__dirname);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,10 +34,13 @@ async function bootstrap() {
     },
   });
 
+  // Get the port from the config
+  const configService = app.get<ConfigService>(ConfigService);
+  const port = configService.get("app.port") || 3000;
+
   // Start the app
-  await app.listen(process.env.PORT ?? 3000, () => {
-    logger.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}`);
-    logger.log(`Swagger is running on: http://localhost:${process.env.PORT ?? 3000}/docs`);
+  await app.listen(port, () => {
+    logger.log(`Server is running on http://localhost:${port}`);
   });
 
   // Hot Module Replacement
