@@ -4,7 +4,7 @@ import axiosRetry from "axios-retry";
 import { CronJob } from "cron";
 import { QiDetailResponse } from "./dtos/qi-detail-response.dto";
 import { Repository } from "typeorm";
-import { QiDataHourlyEntity } from "./entities/qi-data-hourly.entity";
+import { QiDataHourlyEntity } from "./qi-data-hourly/qi-data-hourly.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
