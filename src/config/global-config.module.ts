@@ -6,7 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { join } from "node:path";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
-import { configurations } from "./configurations";
+import { configurations } from "./config-loader";
 
 @Module({
   imports: [

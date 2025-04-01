@@ -1,9 +1,11 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app/app.module";
+import "./config/crud-config";
+
 import { Logger } from "@nestjs/common";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
+import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { resolve } from "node:path";
+import { AppModule } from "./app/app.module";
 
 declare const module: any;
 declare global {
