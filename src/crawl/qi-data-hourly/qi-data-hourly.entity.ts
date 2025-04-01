@@ -5,7 +5,7 @@ import { Column, Entity, Unique } from "typeorm";
 @Entity("qi_data_hourly")
 @Unique("key", ["stationId", "time"])
 export class QiDataHourlyEntity extends BaseEntityWithBigintId {
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ type: "timestamptz", nullable: true })
   crawlAt: Date;
 
   @Column({ })
