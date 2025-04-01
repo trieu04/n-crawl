@@ -31,7 +31,7 @@ export class CrawlService {
       retries: 3,
       retryDelay: axiosRetry.exponentialDelay,
     });
-  }
+  }  
 
   async testProcessCrawlQiDataHourly() {
     return await this.processCrawlQiDataHourly();
@@ -43,7 +43,7 @@ export class CrawlService {
 
     for (const station of stations) {
       const stationId = station.id;
-      const crawlDate = new Date();
+      const crawlAt = new Date();
       try {
         const result = await this.getQiDataHourly({ stationId });
         if (!result) {
@@ -51,7 +51,7 @@ export class CrawlService {
         }
         const upsertData = result.map(([time, detail]) => {
           return {
-            crawlDate,
+            crawlAt,
             stationId,
             time,
             detail,
