@@ -21,10 +21,10 @@ export class QiDataHourlyService extends TypeOrmCrudService<QiDataHourlyEntity> 
 
     const data = result.data.map((item) => {
       return {
+        crawlAt: item.crawlAt,
         stationId: item.stationId,
         time: item.time,
         ...(item.detail || {}),
-        crawlAt: item.crawlAt,
       };
     });
 
