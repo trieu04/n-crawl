@@ -1,8 +1,10 @@
 import { Crud, CrudRequest, CrudRequestInterceptor, Override, ParsedRequest } from "@dataui/crud";
-import { Controller, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Response as NestResponse, UseInterceptors } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
+import { Response } from "express";
+import { CrudGetManyQueries } from "src/common/decorators/get-many-query.decorator";
 import { QiDataHourlyEntity } from "./qi-data-hourly.entity";
 import { QiDataHourlyService } from "./qi-data-hourly.service";
-import { ApiTags } from "@nestjs/swagger";
 
 @UseInterceptors(CrudRequestInterceptor)
 @Crud({
@@ -13,13 +15,20 @@ import { ApiTags } from "@nestjs/swagger";
     only: ["getManyBase"],
   },
 })
+@ApiTags("App", "Qi Data Hourly")
 @Controller("qi-data-hourly")
 export class QiDataHourlyController {
   constructor(public service: QiDataHourlyService) {}
 
-  @Override()
-  @ApiTags("App")
+
+  @Override("getManyBase")
   async getMany(@ParsedRequest() req: CrudRequest) {
     return this.service.getMany(req);
+  }
+
+  @CrudGetManyQueries()
+  @Get("/export")
+  async exportToXlsx(@ParsedRequest() req: CrudRequest, @NestResponse() res: Response) {
+    return this.service.exportToXlsx(req, res);
   }
 }
