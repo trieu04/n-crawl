@@ -21,19 +21,37 @@ export class QiDataHourlyService extends TypeOrmCrudService<QiDataHourlyEntity> 
 
     const data = result.data.map((item) => {
       return {
+        id: item.id,
         crawlAt: item.crawlAt,
         stationId: item.stationId,
         time: item.time,
-        ...(item.detail || {}),
+        CO: item.detail?.CO ?? null,
+        "PM-10": item.detail["PM-10"] ?? null,
+        SO2: item.detail?.SO2 ?? null,
+        "PM-2-5": item.detail["PM-2-5"] ?? null,
+        O3: item.detail?.O3 ?? null,
+        NO2: item.detail?.NO2 ?? null,
       };
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
+    const heading = [["id", "crawlAt", "stationId", "time", "CO", "PM-10", "SO2", "PM-2-5", "O3", "NO2"]];
+    const headingStyle = { font: { bold: true } };
+    const ws = XLSX.utils.json_to_sheet([]);
+    XLSX.utils.sheet_add_aoa(ws, heading);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+    const headerRange = { s: { r: 0, c: 0 }, e: { r: 0, c: heading[0].length - 1 } }; 
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cellAddress = XLSX.utils.encode_cell({ r: headerRange.s.r, c: C });
+      if (!ws[cellAddress])
+        continue;
+      ws[cellAddress].s = headingStyle;
+    }
 
-    const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_json(ws, data, { origin: "A2", skipHeader: true });
+    XLSX.utils.book_append_sheet(wb, ws, "Data");
+
+    const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
 
     res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     res.setHeader("Content-Disposition", "attachment; filename=qi-data-hourly.xlsx");
