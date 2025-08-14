@@ -20,7 +20,6 @@ import { QiDataHourlyService } from "./qi-data-hourly.service";
 export class QiDataHourlyController {
   constructor(public service: QiDataHourlyService) {}
 
-
   @Override("getManyBase")
   async getMany(@ParsedRequest() req: CrudRequest) {
     return this.service.getMany(req);

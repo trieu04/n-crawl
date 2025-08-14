@@ -21,16 +21,16 @@ export class QiDataHourlyService extends TypeOrmCrudService<QiDataHourlyEntity> 
 
     const data = result.data.map((item) => {
       return {
-        id: item.id,
-        crawlAt: item.crawlAt,
-        stationId: item.stationId,
-        time: item.time,
-        CO: item.detail?.CO ?? null,
+        "id": item.id,
+        "crawlAt": item.crawlAt,
+        "stationId": item.stationId,
+        "time": item.time,
+        "CO": item.detail?.CO ?? null,
         "PM-10": item.detail["PM-10"] ?? null,
-        SO2: item.detail?.SO2 ?? null,
+        "SO2": item.detail?.SO2 ?? null,
         "PM-2-5": item.detail["PM-2-5"] ?? null,
-        O3: item.detail?.O3 ?? null,
-        NO2: item.detail?.NO2 ?? null,
+        "O3": item.detail?.O3 ?? null,
+        "NO2": item.detail?.NO2 ?? null,
       };
     });
 
@@ -39,7 +39,7 @@ export class QiDataHourlyService extends TypeOrmCrudService<QiDataHourlyEntity> 
     const ws = XLSX.utils.json_to_sheet([]);
     XLSX.utils.sheet_add_aoa(ws, heading);
 
-    const headerRange = { s: { r: 0, c: 0 }, e: { r: 0, c: heading[0].length - 1 } }; 
+    const headerRange = { s: { r: 0, c: 0 }, e: { r: 0, c: heading[0].length - 1 } };
     for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
       const cellAddress = XLSX.utils.encode_cell({ r: headerRange.s.r, c: C });
       if (!ws[cellAddress])

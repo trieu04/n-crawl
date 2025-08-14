@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { Cron } from "@nestjs/schedule";
 import axios, { AxiosInstance } from "axios";
 import axiosRetry from "axios-retry";
-import { CronJob } from "cron";
 import { QiDetailResponse } from "./dtos/qi-detail-response.dto";
 import { Repository } from "typeorm";
 import { QiDataHourlyEntity } from "./qi-data-hourly/qi-data-hourly.entity";
@@ -9,32 +9,28 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class CrawlService {
-  private job: CronJob;
   private logger: Logger;
   private axios: AxiosInstance;
   constructor(
     @InjectRepository(QiDataHourlyEntity) private readonly qiDataHourlyRepo: Repository<QiDataHourlyEntity>,
   ) {
-    const job = CronJob.from({
-      cronTime: "0 0,6,12,18 * * *", // Every day 12AM, 6 AM, 12 PM, and 6 PM
-      onTick: async () => {
-        await this.processCrawlQiDataHourly();
-      },
-      start: true,
-      timeZone: "Asia/Ho_Chi_Minh", // Time zone for Vietnam
-    });
-    this.job = job;
-
     this.logger = new Logger("CrawlService");
     this.axios = axios.create();
     axiosRetry(this.axios, {
       retries: 3,
       retryDelay: axiosRetry.exponentialDelay,
     });
-  }  
+  }
 
   async testProcessCrawlQiDataHourly() {
     return await this.processCrawlQiDataHourly();
+  }
+
+  @Cron("0 0,6,12,18 * * *", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  })
+  async handleCrawlQiDataHourlyCron() {
+    await this.processCrawlQiDataHourly();
   }
 
   async processCrawlQiDataHourly() {
@@ -49,12 +45,17 @@ export class CrawlService {
         if (!result) {
           throw new Error("No data returned from getQiDataHourly");
         }
-        const upsertData = result.map(([time, detail]) => {
+        const upsertData = result.map(([rawTime, rawDetail]) => {
+          const [date, time] = rawTime.split(" ");
+          const [day, month, year] = date.split("/");
+          const datetime = `${year}/${month}/${day} ${time}`;
+
           return {
             crawlAt,
             stationId,
-            time,
-            detail,
+            time: rawTime,
+            time2: datetime,
+            detail: rawDetail,
           };
         });
         await this.qiDataHourlyRepo.upsert(upsertData, ["stationId", "time"]);

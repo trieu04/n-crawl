@@ -14,6 +14,9 @@ export class QiDataHourlyEntity extends BaseEntityWithBigintId {
   @Column({ })
   time: string;
 
+  @Column({ nullable: true })
+  time2: string;
+
   @JsonColumn()
   detail: any;
 }
