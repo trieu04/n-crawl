@@ -24,7 +24,7 @@ export class QiDataHourlyService extends TypeOrmCrudService<QiDataHourlyEntity> 
         "id": item.id,
         "crawlAt": item.crawlAt,
         "stationId": item.stationId,
-        "time": item.time,
+        "time": item.time2,
         "CO": item.detail?.CO ?? null,
         "PM-10": item.detail["PM-10"] ?? null,
         "SO2": item.detail?.SO2 ?? null,
